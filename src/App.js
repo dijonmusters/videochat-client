@@ -5,7 +5,8 @@ import Room from './components/Room';
 import Index from './components/Index';
 
 const Container = styled.div`
-  background-color: white;
+  background: linear-gradient(to right, #fbd3e9, #bb377d);
+
   min-height: 100vh;
   display: flex;
   color: #444;
@@ -29,3 +30,8 @@ const App = () => {
 };
 
 export default App;
+
+// TODO: Make landing page a URL structure with customisable path
+//        - two buttons: generate URL - create Coversation
+// TODO: Fix scroll on horizontal stack
+// TODO: handle disconnect

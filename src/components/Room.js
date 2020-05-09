@@ -15,6 +15,7 @@ const Video = styled.video`
 const VideoContainer = styled.div`
   flex: 1;
   display: grid;
+  grid-gap: 1px;
   grid-template-columns: ${({ users }) => getColumns(users)};
 `;
 
