@@ -3,12 +3,19 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import config from '../utils/config';
+import { getColumns } from '../utils/spatial';
 
 const Video = styled.video`
-  /* width: 50vw;
-  height: 50vh; */
-  flex: 1;
   transform: scaleX(-1);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const VideoContainer = styled.div`
+  flex: 1;
+  display: grid;
+  grid-template-columns: ${({ users }) => getColumns(users)};
 `;
 
 const Room = () => {
@@ -74,7 +81,6 @@ const Room = () => {
     });
 
     socket.current.on('user joined', async (id) => {
-      console.log(`${id} joined`);
       const peer = new RTCPeerConnection(config);
       peers.current[id] = peer;
 
@@ -103,12 +109,12 @@ const Room = () => {
   }, []);
 
   return (
-    <>
+    <VideoContainer users={users.length + 1}>
       <Video ref={videoRef} autoPlay />
       {users.map((u) => (
         <Video key={u} id={u} autoPlay />
       ))}
-    </>
+    </VideoContainer>
   );
 };
 
