@@ -13,7 +13,6 @@ const Video = styled.video`
 `;
 
 const VideoContainer = styled.div`
-  /* flex: 1; */
   width: 100vw;
   height: 100vh;
   display: grid;
@@ -104,6 +103,11 @@ const Room = () => {
         e.candidate && socket.current.emit('candidate', id, e.candidate);
 
       setUsers((currentOnes) => [...currentOnes, id]);
+    });
+
+    socket.current.on('user left', async (id) => {
+      delete peers.current[id];
+      setUsers((currentOnes) => [...currentOnes.filter((u) => u !== id)]);
     });
   };
 
