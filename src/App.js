@@ -31,7 +31,4 @@ const App = () => {
 
 export default App;
 
-// TODO: Make landing page a URL structure with customisable path
-//        - two buttons: generate URL - create Coversation
-// TODO: Fix scroll on horizontal stack
 // TODO: handle disconnect

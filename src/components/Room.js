@@ -13,7 +13,9 @@ const Video = styled.video`
 `;
 
 const VideoContainer = styled.div`
-  flex: 1;
+  /* flex: 1; */
+  width: 100vw;
+  height: 100vh;
   display: grid;
   grid-gap: 1px;
   grid-template-columns: ${({ users }) => getColumns(users)};
@@ -26,6 +28,8 @@ const Room = () => {
   const stream = useRef();
   const peers = useRef({});
   const [users, setUsers] = useState([]);
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   const addPeer = async (id) => {
     const peer = new RTCPeerConnection(config);
@@ -50,7 +54,9 @@ const Room = () => {
     socket.current = io.connect('https://videochat-broker.herokuapp.com/');
 
     stream.current = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: {
+        facingMode: 'user',
+      },
       audio: true,
     });
 
@@ -113,7 +119,7 @@ const Room = () => {
     <VideoContainer users={users.length + 1}>
       <Video ref={videoRef} autoPlay />
       {users.map((u) => (
-        <Video key={u} id={u} autoPlay />
+        <Video key={u} id={u} autoPlay playsInline muted={isIOS} />
       ))}
     </VideoContainer>
   );
