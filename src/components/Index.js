@@ -25,12 +25,15 @@ const Title = styled.div`
   text-align: center;
 
   h1 {
-    font-size: 6rem;
+    font-size: 7rem;
     margin: 0;
+    font-weight: 600;
   }
 
   p {
     margin: 1rem;
+    font-weight: 500;
+    font-size: 1.5rem;
   }
 
   button {
@@ -127,9 +130,7 @@ const Index = () => {
       <Title>
         <h1>Converse</h1>
         <p>The open source video chat platform that doesn't suck!</p>
-        <PrimaryButton onClick={randomRoom} primary>
-          Start a conversation
-        </PrimaryButton>
+        <PrimaryButton onClick={randomRoom}>Start a conversation</PrimaryButton>
       </Title>
       <Form>
         <Url>
