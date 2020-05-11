@@ -5,8 +5,6 @@ import Room from './components/Room';
 import Index from './components/Index';
 
 const Container = styled.div`
-  background: linear-gradient(to right, #fbd3e9, #bb377d);
-
   min-height: 100vh;
   display: flex;
   color: #444;
@@ -31,6 +29,8 @@ const App = () => {
 
 export default App;
 
-// TODO: checvk this workedStop feedback - maybe mute microphone from coming through speakers
+// TODO: Fix design of control panel
+// TODO: Add hangup button
 // TODO: Implement hold space to unmute
 // TODO: Add favicon
+// TODO: Add request to mute someone else
