@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
+import { FiVideo, FiMic, FiVideoOff, FiMicOff } from 'react-icons/fi';
 import config from '../utils/config';
 import { getColumns } from '../utils/spatial';
 
@@ -20,6 +21,40 @@ const VideoContainer = styled.div`
   grid-template-columns: ${({ users }) => getColumns(users)};
 `;
 
+const Controls = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Button = styled.button`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  font-size: 1.5rem;
+
+  border: none;
+  color: #555;
+  padding: 2rem;
+
+  & > svg {
+    display: block;
+    font-size: 2rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.3);
+  }
+`;
+
 const Room = () => {
   const { roomId } = useParams();
   const videoRef = useRef();
@@ -27,6 +62,8 @@ const Room = () => {
   const stream = useRef();
   const peers = useRef({});
   const [users, setUsers] = useState([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoActive, setIsVideoActive] = useState(true);
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -119,12 +156,34 @@ const Room = () => {
     };
   }, []);
 
+  const toggleMute = () => {
+    stream.current.getAudioTracks()[0].enabled = !stream.current.getAudioTracks()[0]
+      .enabled;
+    setIsMuted(!stream.current.getAudioTracks()[0].enabled);
+  };
+
+  const toggleVideo = () => {
+    stream.current.getVideoTracks()[0].enabled = !stream.current.getVideoTracks()[0]
+      .enabled;
+    setIsVideoActive(stream.current.getVideoTracks()[0].enabled);
+  };
+
   return (
     <VideoContainer users={users.length + 1}>
-      <Video ref={videoRef} autoPlay />
+      <Video ref={videoRef} autoPlay muted={true} />
       {users.map((u) => (
         <Video key={u} id={u} autoPlay playsInline muted={isIOS} />
       ))}
+      <Controls>
+        <Button onClick={toggleMute}>
+          {isMuted ? <FiMicOff /> : <FiMic />}
+          Mute
+        </Button>
+        <Button onClick={toggleVideo}>
+          {isVideoActive ? <FiVideo /> : <FiVideoOff />}
+          Hide
+        </Button>
+      </Controls>
     </VideoContainer>
   );
 };

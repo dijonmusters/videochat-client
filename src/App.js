@@ -30,3 +30,7 @@ const App = () => {
 };
 
 export default App;
+
+// TODO: checvk this workedStop feedback - maybe mute microphone from coming through speakers
+// TODO: Implement hold space to unmute
+// TODO: Add favicon
