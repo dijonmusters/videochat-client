@@ -10,11 +10,20 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `;
 
 const Panel = styled.div`
   background: rgba(0, 0, 0, 0.4);
-  padding: 4rem;
+  padding: 3rem;
+
+  @media only screen and (max-width: 800px) {
+    padding: 0;
+    background: transparent;
+  }
 `;
 
 const Url = styled.div`
@@ -25,6 +34,10 @@ const Url = styled.div`
 `;
 
 const Static = styled.div`
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
+
   flex: 0;
   font-size: 2rem;
   border-right: 1px solid #afafaf;
@@ -39,10 +52,10 @@ const Input = styled.input`
   outline: none;
   box-sizing: border-box;
   color: inherit;
-  padding: 0 1.5rem;
+  padding: 0.75rem 1.5rem;
 `;
 
-const Button = styled.button`
+const InlineButton = styled.button`
   flex: 0;
   background: transparent;
   font-size: 1.5rem;
@@ -53,6 +66,30 @@ const Button = styled.button`
   &:hover {
     cursor: pointer;
     background: rgba(255, 255, 255, 0.2);
+  }
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
+`;
+
+const BlockButton = styled.button`
+  display: none;
+
+  @media only screen and (max-width: 800px) {
+    display: block;
+    margin-top: 0.5rem;
+    width: 100%;
+    background: transparent;
+    font-size: 1.5rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid white;
+    color: white;
+
+    &:hover {
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
 `;
 
@@ -84,8 +121,9 @@ const Form = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyUp={handleEnterSubmit}
           />
-          <Button onClick={createRoom}>Create</Button>
+          <InlineButton onClick={createRoom}>Create</InlineButton>
         </Url>
+        <BlockButton onClick={createRoom}>Create</BlockButton>
       </Panel>
     </Container>
   );
