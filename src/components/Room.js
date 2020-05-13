@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
-import { FiVideo, FiMic, FiVideoOff, FiMicOff } from 'react-icons/fi';
+import { FiVideo, FiMic, FiVideoOff, FiMicOff, FiPhone } from 'react-icons/fi';
 import config from '../utils/config';
 import { getColumns } from '../utils/spatial';
 
@@ -25,10 +25,11 @@ const Controls = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
+  color: white;
 `;
 
 const Button = styled.button`
@@ -38,10 +39,10 @@ const Button = styled.button`
   align-items: center;
   background: transparent;
   font-size: 1.5rem;
-
   border: none;
-  color: #555;
-  padding: 2rem;
+  color: inherit;
+  padding: 1rem;
+  margin: 0 1rem;
 
   & > svg {
     display: block;
@@ -53,6 +54,25 @@ const Button = styled.button`
     background: rgba(255, 255, 255, 0.3);
   }
 `;
+
+const Phone = styled(FiPhone)`
+  transform: rotate(135deg);
+  &:hover {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+const PhoneLink = styled.a`
+  background: red;
+  padding: 1rem;
+  border-radius: 50%;
+  display: flex;
+  font-size: 1.5rem;
+  color: inherit;
+`;
+
+const PhoneBackground = styled.div``;
 
 const Room = () => {
   const { roomId } = useParams();
@@ -87,7 +107,6 @@ const Room = () => {
 
   const connectToRoom = async () => {
     socket.current = io.connect('https://videochat-broker.herokuapp.com/');
-
     stream.current = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user',
@@ -169,7 +188,7 @@ const Room = () => {
 
   return (
     <VideoContainer users={users.length + 1}>
-      <Video ref={videoRef} autoPlay muted={true} />
+      <Video ref={videoRef} autoPlay playsInline muted={true} />
       {users.map((u) => (
         <Video key={u} id={u} autoPlay playsInline muted={isIOS} />
       ))}
@@ -178,6 +197,11 @@ const Room = () => {
           {isMuted ? <FiMicOff /> : <FiMic />}
           Mute
         </Button>
+        <PhoneBackground>
+          <PhoneLink href='/'>
+            <Phone />
+          </PhoneLink>
+        </PhoneBackground>
         <Button onClick={toggleVideo}>
           {isVideoActive ? <FiVideo /> : <FiVideoOff />}
           Hide
