@@ -109,16 +109,16 @@ const Room = () => {
 
   const connectToRoom = async () => {
     socket.current = io.connect('https://videochat-broker.herokuapp.com/');
-    try {
-      stream.current = await navigator.getUserMedia.getUserMedia({
-        video: {
-          facingMode: 'user',
-        },
-        audio: true,
-      });
-    } catch (error) {
-      history.push('/unsupported');
-    }
+    // try {
+    stream.current = await navigator.getUserMedia.getUserMedia({
+      video: {
+        facingMode: 'user',
+      },
+      audio: true,
+    });
+    // } catch (error) {
+    //   history.push('/unsupported');
+    // }
 
     videoRef.current.srcObject = stream.current;
 

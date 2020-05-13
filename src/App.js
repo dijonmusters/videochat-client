@@ -19,9 +19,9 @@ const App = () => {
           <Route path='/' exact>
             <Index />
           </Route>
-          <Route path='/unsupported'>
+          {/* <Route path='/unsupported'>
             <Unsupported />
-          </Route>
+          </Route> */}
           <Route path='/:roomId'>
             <Room />
           </Route>
