@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
-import { FiVideo, FiMic, FiVideoOff, FiMicOff, FiPhone } from 'react-icons/fi';
 import { useHistory } from 'react-router-dom';
 import config from '../utils/config';
 import { getColumns } from '../utils/spatial';
+import Controls from './Controls';
 
 const Video = styled.video`
   transform: scaleX(-1);
@@ -21,66 +21,6 @@ const VideoContainer = styled.div`
   grid-template-columns: ${({ users }) => getColumns(users)};
 `;
 
-const Controls = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  color: white;
-`;
-
-const Button = styled.button`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  font-size: 1.5rem;
-  border: none;
-  color: inherit;
-  padding: 1rem 0;
-
-  & > svg {
-    display: block;
-    font-size: 2rem;
-  }
-
-  &:hover {
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const Phone = styled(FiPhone)`
-  transform: rotate(135deg);
-`;
-
-const PhoneLink = styled.a`
-  background: #dd4124;
-  padding: 1rem;
-  border-radius: 50%;
-  display: flex;
-  font-size: 1.5rem;
-  color: inherit;
-`;
-
-const PhoneBackground = styled.div`
-  flex: 1;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0;
-
-  &:hover {
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
 const Room = () => {
   const { roomId } = useParams();
   const videoRef = useRef();
@@ -88,8 +28,6 @@ const Room = () => {
   const stream = useRef();
   const peers = useRef({});
   const [users, setUsers] = useState([]);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoActive, setIsVideoActive] = useState(true);
   const history = useHistory();
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -186,39 +124,13 @@ const Room = () => {
     };
   }, []);
 
-  const toggleMute = () => {
-    stream.current.getAudioTracks()[0].enabled = !stream.current.getAudioTracks()[0]
-      .enabled;
-    setIsMuted(!stream.current.getAudioTracks()[0].enabled);
-  };
-
-  const toggleVideo = () => {
-    stream.current.getVideoTracks()[0].enabled = !stream.current.getVideoTracks()[0]
-      .enabled;
-    setIsVideoActive(stream.current.getVideoTracks()[0].enabled);
-  };
-
   return (
     <VideoContainer users={users.length + 1}>
       <Video ref={videoRef} autoPlay playsInline muted={true} />
       {users.map((u) => (
         <Video key={u} id={u} autoPlay playsInline muted={isIOS} />
       ))}
-      <Controls>
-        <Button onClick={toggleMute}>
-          {isMuted ? <FiMicOff /> : <FiMic />}
-          Mute
-        </Button>
-        <PhoneBackground>
-          <PhoneLink href='/'>
-            <Phone />
-          </PhoneLink>
-        </PhoneBackground>
-        <Button onClick={toggleVideo}>
-          {isVideoActive ? <FiVideo /> : <FiVideoOff />}
-          Hide
-        </Button>
-      </Controls>
+      <Controls stream={stream} />
     </VideoContainer>
   );
 };

@@ -33,5 +33,4 @@ const App = () => {
 
 export default App;
 
-// TODO: Implement hold space to unmute
 // TODO: Add request to mute someone else
