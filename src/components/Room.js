@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import { FiVideo, FiMic, FiVideoOff, FiMicOff, FiPhone } from 'react-icons/fi';
+import { useHistory } from 'react-router-dom';
 import config from '../utils/config';
 import { getColumns } from '../utils/spatial';
 
@@ -83,6 +84,7 @@ const Room = () => {
   const [users, setUsers] = useState([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoActive, setIsVideoActive] = useState(true);
+  const history = useHistory();
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -107,12 +109,16 @@ const Room = () => {
 
   const connectToRoom = async () => {
     socket.current = io.connect('https://videochat-broker.herokuapp.com/');
-    stream.current = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-      },
-      audio: true,
-    });
+    try {
+      stream.current = await navigator.getUserMedia.getUserMedia({
+        video: {
+          facingMode: 'user',
+        },
+        audio: true,
+      });
+    } catch (error) {
+      history.push('/unsupported');
+    }
 
     videoRef.current.srcObject = stream.current;
 

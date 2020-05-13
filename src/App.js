@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Room from './components/Room';
 import Index from './components/Index';
+import Unsupported from './components/Unsupported';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -17,6 +18,9 @@ const App = () => {
         <Switch>
           <Route path='/' exact>
             <Index />
+          </Route>
+          <Route path='/unsupported'>
+            <Unsupported />
           </Route>
           <Route path='/:roomId'>
             <Room />
