@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { v1 as uuid } from 'uuid';
+import { useHistory } from 'react-router-dom';
 import Header from './Header';
 import Form from './Form';
 
@@ -15,10 +17,44 @@ const Container = styled.div`
   background-blend-mode: saturation;
 `;
 
+const Button = styled.button`
+  align-self: center;
+  background: #00d0c6;
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  @media only screen and (max-width: 800px) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 100vw;
+    padding: 2rem;
+    font-size: 2rem;
+  }
+`;
+
 const Index = () => {
+  const history = useHistory();
+
+  const randomRoom = () => {
+    const id = uuid();
+    history.push(`/${id}`);
+  };
+
   return (
     <Container>
       <Header />
+      <Button onClick={randomRoom}>Start conversation</Button>
       <Form />
     </Container>
   );

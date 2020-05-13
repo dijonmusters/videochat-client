@@ -28,12 +28,11 @@ const Controls = styled.div`
   right: 0;
   background: rgba(0, 0, 0, 0.4);
   display: flex;
-  justify-content: center;
-  align-items: center;
   color: white;
 `;
 
 const Button = styled.button`
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -42,8 +41,7 @@ const Button = styled.button`
   font-size: 1.5rem;
   border: none;
   color: inherit;
-  padding: 1rem;
-  margin: 0 1rem;
+  padding: 1rem 0;
 
   & > svg {
     display: block;
@@ -58,14 +56,10 @@ const Button = styled.button`
 
 const Phone = styled(FiPhone)`
   transform: rotate(135deg);
-  &:hover {
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.3);
-  }
 `;
 
 const PhoneLink = styled.a`
-  background: red;
+  background: #dd4124;
   padding: 1rem;
   border-radius: 50%;
   display: flex;
@@ -73,7 +67,19 @@ const PhoneLink = styled.a`
   color: inherit;
 `;
 
-const PhoneBackground = styled.div``;
+const PhoneBackground = styled.div`
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+
+  &:hover {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.3);
+  }
+`;
 
 const Room = () => {
   const { roomId } = useParams();

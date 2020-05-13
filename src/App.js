@@ -33,8 +33,5 @@ const App = () => {
 
 export default App;
 
-// TODO: Fix design of control panel
-// TODO: Add hangup button
 // TODO: Implement hold space to unmute
-// TODO: Add favicon
 // TODO: Add request to mute someone else

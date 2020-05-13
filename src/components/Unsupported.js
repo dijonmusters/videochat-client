@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Message = styled.p`
+const Message = styled.div`
   padding: 1rem;
   display: flex;
   flex-direction: column;
