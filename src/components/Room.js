@@ -3,9 +3,14 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import config from '../utils/config';
 import { getColumns } from '../utils/spatial';
 import Controls from './Controls';
+import {
+  createPeerConnection,
+  pipeVideoStream,
+  getOffer,
+  getAnswer,
+} from '../utils/connections';
 
 const Video = styled.video`
   transform: scaleX(-1);
@@ -32,27 +37,9 @@ const Room = () => {
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-  const addPeer = async (id) => {
-    const peer = new RTCPeerConnection(config);
-
-    peers.current[id] = peer;
-    stream.current.getTracks().forEach((t) => peer.addTrack(t, stream.current));
-
-    peer.ontrack = (e) => {
-      const videoElement = document.getElementById(id);
-      if (videoElement) videoElement.srcObject = e.streams[0];
-    };
-
-    const offer = await peer.createOffer();
-    await peer.setLocalDescription(offer);
-    socket.current.emit('offer', id, peer.localDescription);
-
-    peer.onicecandidate = (e) =>
-      e.candidate && socket.current.emit('candidate', id, e.candidate);
-  };
-
   const connectToRoom = async () => {
     socket.current = io.connect('https://videochat-broker.herokuapp.com/');
+
     try {
       stream.current = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -68,12 +55,8 @@ const Room = () => {
 
     socket.current.on('offer', async (id, description) => {
       const peer = peers.current[id];
-      await peer.setRemoteDescription(description);
-
-      const answer = peer.createAnswer();
-      await peer.setLocalDescription(answer);
-
-      socket.current.emit('answer', id, peer.localDescription);
+      const answer = await getAnswer(peer, description);
+      socket.current.emit('answer', id, answer);
     });
 
     socket.current.on('candidate', async (id, candidate) => {
@@ -87,32 +70,32 @@ const Room = () => {
     socket.current.emit('join room', roomId);
 
     socket.current.on('all users', async (currentUsers) => {
-      await Promise.all(currentUsers.map(addPeer));
+      await Promise.all(
+        currentUsers.map(async (id) => {
+          const peer = createPeerConnection(id, stream, socket);
+          peers.current[id] = peer;
+
+          pipeVideoStream(id, peer);
+
+          const offer = await getOffer(id, peer);
+          socket.current.emit('offer', id, offer);
+        })
+      );
       setUsers(currentUsers);
     });
 
     socket.current.on('user joined', async (id) => {
-      const peer = new RTCPeerConnection(config);
+      const peer = createPeerConnection(id, stream, socket);
       peers.current[id] = peer;
 
-      stream.current
-        .getTracks()
-        .forEach((t) => peer.addTrack(t, stream.current));
+      pipeVideoStream(id, peer);
 
-      peer.ontrack = (e) => {
-        const videoElement = document.getElementById(id);
-        videoElement && (videoElement.srcObject = e.streams[0]);
-      };
-
-      peer.onicecandidate = (e) =>
-        e.candidate && socket.current.emit('candidate', id, e.candidate);
-
-      setUsers((currentOnes) => [...currentOnes, id]);
+      setUsers((currentUsers) => [...currentUsers, id]);
     });
 
     socket.current.on('user left', async (id) => {
       delete peers.current[id];
-      setUsers((currentOnes) => [...currentOnes.filter((u) => u !== id)]);
+      setUsers((currentUsers) => [...currentUsers.filter((u) => u !== id)]);
     });
   };
 

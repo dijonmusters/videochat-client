@@ -34,3 +34,5 @@ const App = () => {
 export default App;
 
 // TODO: Add request to mute someone else
+// TODO: Move peer mess to function
+// TODO: Add analytics around room creation, destruction and how long it existed
