@@ -36,9 +36,5 @@ const App = () => {
 
 export default App;
 
-// TODO: Show animation on mute requested and received side
-// TODO: Fix video sizing issue
-// TODO: Deploy front
-
 // TODO: Add screen share
 // TODO: Add drag and drop to video page

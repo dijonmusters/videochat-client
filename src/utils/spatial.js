@@ -1,8 +1,7 @@
 const getColumns = (items) => {
-  // const { innerWidth: width, innerHeight: height } = window;
-
   switch (items) {
     case 1:
+      return '1fr';
     case 2:
     case 3:
     case 4:
