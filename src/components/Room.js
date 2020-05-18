@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import io from 'socket.io-client';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { getColumns } from '../utils/spatial';
 import Controls from './Controls';
 import {
   createPeerConnection,
-  pipeVideoStream,
   getOffer,
   getAnswer,
 } from '../utils/connections';
+import RemoteVideo from './RemoteVideo';
+import { useSocket } from '../context/Socket';
 
 const Video = styled.video`
   transform: scaleX(-1);
@@ -29,91 +29,139 @@ const VideoContainer = styled.div`
 const Room = () => {
   const { roomId } = useParams();
   const videoRef = useRef();
-  const socket = useRef();
+  const { socket } = useSocket();
   const stream = useRef();
   const peers = useRef({});
   const [users, setUsers] = useState([]);
   const history = useHistory();
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const [isMuteRequested, setIsMuteRequested] = useState(false);
 
-  const connectToRoom = async () => {
-    socket.current = io.connect('https://videochat-broker.herokuapp.com/');
+  const constraints = {
+    video: {
+      facingMode: 'user',
+    },
+    audio: true,
+  };
 
+  const getVideoStream = async () => {
     try {
-      stream.current = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-        },
-        audio: true,
-      });
+      return await navigator.mediaDevices.getUserMedia(constraints);
     } catch (error) {
       history.push('/unsupported');
     }
+  };
 
+  const pipeMyVideoToScreen = () => {
     videoRef.current.srcObject = stream.current;
+  };
 
-    socket.current.on('offer', async (id, description) => {
+  const subscribeToMessages = () => {
+    socket.on('offer', async (id, description) => {
       const peer = peers.current[id];
       const answer = await getAnswer(peer, description);
-      socket.current.emit('answer', id, answer);
+      socket.emit('answer', id, answer);
     });
 
-    socket.current.on('candidate', async (id, candidate) => {
-      peers.current[id].addIceCandidate(new RTCIceCandidate(candidate));
-    });
-
-    socket.current.on('answer', (id, description) => {
+    socket.on('answer', (id, description) => {
       peers.current[id].setRemoteDescription(description);
     });
 
-    socket.current.emit('join room', roomId);
+    socket.on('candidate', async (id, candidate) => {
+      peers.current[id].addIceCandidate(new RTCIceCandidate(candidate));
+    });
 
-    socket.current.on('all users', async (currentUsers) => {
+    socket.on('request mute', () => {
+      setIsMuteRequested(true);
+    });
+
+    socket.on('all users', async (currentUsers) => {
       await Promise.all(
         currentUsers.map(async (id) => {
           const peer = createPeerConnection(id, stream, socket);
           peers.current[id] = peer;
 
-          pipeVideoStream(id, peer);
+          peer.ontrack = (e) => {
+            setUsers((otherUsers) => {
+              const user = otherUsers.find((u) => u.id === id);
+              user.stream = e.streams[0];
+              return [...otherUsers];
+            });
+          };
 
           const offer = await getOffer(id, peer);
-          socket.current.emit('offer', id, offer);
+          socket.emit('offer', id, offer);
         })
       );
-      setUsers(currentUsers);
+      setUsers(currentUsers.map((id) => ({ id })));
     });
 
-    socket.current.on('user joined', async (id) => {
+    socket.on('user joined', async (id) => {
       const peer = createPeerConnection(id, stream, socket);
       peers.current[id] = peer;
 
-      pipeVideoStream(id, peer);
+      peer.ontrack = (e) => {
+        setUsers((otherUsers) => {
+          const user = otherUsers.find((u) => u.id === id);
+          user.stream = e.streams[0];
+          return [...otherUsers];
+        });
+      };
 
-      setUsers((currentUsers) => [...currentUsers, id]);
+      setUsers((currentUsers) => [...currentUsers, { id }]);
     });
 
-    socket.current.on('user left', async (id) => {
+    socket.on('user left', async (id) => {
       delete peers.current[id];
-      setUsers((currentUsers) => [...currentUsers.filter((u) => u !== id)]);
+      setUsers((currentUsers) => [...currentUsers.filter((u) => u.id !== id)]);
     });
+
+    socket.on('request mute status', (requesterId) => {
+      socket.emit(
+        'report mute status',
+        requesterId,
+        socket.id,
+        !stream.current.getAudioTracks()[0].enabled
+      );
+    });
+
+    socket.on('user mute status', (senderId, status) => {
+      setUsers((otherUsers) => {
+        const user = otherUsers.find((u) => u.id === senderId);
+        user.isMuted = status;
+        return [...otherUsers];
+      });
+    });
+  };
+
+  const connectToRoom = async () => {
+    stream.current = await getVideoStream();
+
+    subscribeToMessages();
+    pipeMyVideoToScreen();
+
+    socket.emit('join room', roomId);
   };
 
   useEffect(() => {
     connectToRoom();
-
-    return () => {
-      socket.current.close();
-    };
   }, []);
 
   return (
     <VideoContainer users={users.length + 1}>
       <Video ref={videoRef} autoPlay playsInline muted={true} />
-      {users.map((u) => (
-        <Video key={u} id={u} autoPlay playsInline muted={isIOS} />
+      {users.map((user) => (
+        <RemoteVideo
+          key={user.id}
+          id={user.id}
+          stream={user.stream}
+          isMuted={user.isMuted}
+        />
       ))}
-      <Controls stream={stream} />
+      <Controls
+        stream={stream}
+        isMuteRequested={isMuteRequested}
+        setIsMuteRequested={setIsMuteRequested}
+      />
     </VideoContainer>
   );
 };

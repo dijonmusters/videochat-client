@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Room from './components/Room';
 import Index from './components/Index';
 import Unsupported from './components/Unsupported';
+import SocketProvider from './context/Socket';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -13,26 +14,31 @@ const Container = styled.div`
 
 const App = () => {
   return (
-    <Container>
-      <BrowserRouter>
-        <Switch>
-          <Route path='/' exact>
-            <Index />
-          </Route>
-          <Route path='/unsupported'>
-            <Unsupported />
-          </Route>
-          <Route path='/:roomId'>
-            <Room />
-          </Route>
-        </Switch>
-      </BrowserRouter>
-    </Container>
+    <SocketProvider>
+      <Container>
+        <BrowserRouter>
+          <Switch>
+            <Route path='/' exact>
+              <Index />
+            </Route>
+            <Route path='/unsupported'>
+              <Unsupported />
+            </Route>
+            <Route path='/:roomId'>
+              <Room />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </Container>
+    </SocketProvider>
   );
 };
 
 export default App;
 
-// TODO: Add request to mute someone else
-// TODO: Move peer mess to function
-// TODO: Add analytics around room creation, destruction and how long it existed
+// TODO: Show animation on mute requested and received side
+// TODO: Fix video sizing issue
+// TODO: Deploy front
+
+// TODO: Add screen share
+// TODO: Add drag and drop to video page

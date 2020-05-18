@@ -5,7 +5,7 @@ const subscribePeerToStream = (peer, stream) =>
 
 const subscribeToIceCandidate = (id, peer, socket) => {
   peer.onicecandidate = (e) =>
-    e.candidate && socket.current.emit('candidate', id, e.candidate);
+    e.candidate && socket.emit('candidate', id, e.candidate);
 };
 
 const getOffer = async (id, peer) => {
@@ -28,11 +28,4 @@ const createPeerConnection = (id, stream, socket) => {
   return peer;
 };
 
-const pipeVideoStream = (id, peer) => {
-  peer.ontrack = (e) => {
-    const element = document.getElementById(id);
-    element && (element.srcObject = e.streams[0]);
-  };
-};
-
-export { createPeerConnection, getOffer, getAnswer, pipeVideoStream };
+export { createPeerConnection, getOffer, getAnswer };
