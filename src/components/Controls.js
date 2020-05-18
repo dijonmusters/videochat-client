@@ -76,20 +76,6 @@ const Controls = ({ stream, isMuteRequested, setIsMuteRequested }) => {
   const tempUnmute = useRef(false);
   const { socket } = useSocket();
 
-  const handleKeyDown = (e) => {
-    if (isMuted && !tempUnmute.current && e.key === ' ') {
-      tempUnmute.current = true;
-      setIsMuted(false);
-    }
-  };
-
-  const handleKeyUp = (e) => {
-    if (tempUnmute.current && e.key === ' ') {
-      tempUnmute.current = false;
-      setIsMuted(true);
-    }
-  };
-
   const navigateHome = () => {
     window.location.href = '/';
   };
@@ -104,6 +90,20 @@ const Controls = ({ stream, isMuteRequested, setIsMuteRequested }) => {
       socket.id,
       !stream.current.getAudioTracks()[0].enabled
     );
+  };
+
+  const handleKeyDown = (e) => {
+    if (isMuted && !tempUnmute.current && e.key === ' ') {
+      tempUnmute.current = true;
+      toggleMute();
+    }
+  };
+
+  const handleKeyUp = (e) => {
+    if (tempUnmute.current && e.key === ' ') {
+      tempUnmute.current = false;
+      toggleMute();
+    }
   };
 
   const toggleVideo = () => {
