@@ -5,9 +5,7 @@ const Context = createContext();
 const useSocket = () => useContext(Context);
 
 const SocketProvider = ({ children }) => {
-  const [socket] = useState(io.connect(process.env.SOCKET_URL));
-
-  console.log(process.env.REACT_APP_SOCKET_URL);
+  const [socket] = useState(io.connect(process.env.REACT_APP_SOCKET_URL));
 
   useEffect(() => {
     return () => {

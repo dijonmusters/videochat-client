@@ -124,7 +124,7 @@ const Room = () => {
       );
     });
 
-    socket.on('user mute status', (senderId, status) => {
+    socket.on('report mute status', (senderId, status) => {
       setUsers((otherUsers) => {
         const user = otherUsers.find((u) => u.id === senderId);
         user.isMuted = status;

@@ -51,17 +51,24 @@ const PhoneCircle = styled.span`
 
 const MuteDialog = styled.span`
   position: absolute;
-  top: 50%;
-  transform: translateY(-200%);
   font-size: 1rem;
   display: flex;
   max-width: 200px;
   padding: 0.5rem 1rem;
   pointer-events: none;
   background: #dd4124;
+  opacity: ${({ show }) => (show ? '1' : '0')};
+  top: 50%;
+  transform: ${({ show }) =>
+    show ? 'translateY(-200%)' : 'translateY(-100%)'};
+  transition: all 0.3s ease-in-out;
 `;
 
-const MuteRequestDialog = () => <MuteDialog>Mute requested</MuteDialog>;
+const MuteRequestDialog = ({ isMuted, isMuteRequested }) => (
+  <MuteDialog show={isMuteRequested}>
+    {isMuted ? 'Unmute' : 'Mute'} requested
+  </MuteDialog>
+);
 
 const Controls = ({ stream, isMuteRequested, setIsMuteRequested }) => {
   const [isMuted, setIsMuted] = useState(false);
@@ -114,14 +121,13 @@ const Controls = ({ stream, isMuteRequested, setIsMuteRequested }) => {
     };
   });
 
-  const requestMute = () => {
-    socket.emit('request all mute statuses', socket.id);
-  };
-
   return (
     <Container>
       <Button onClick={toggleMute}>
-        {!isMuted && isMuteRequested && <MuteRequestDialog />}
+        <MuteRequestDialog
+          isMuted={isMuted}
+          isMuteRequested={isMuteRequested}
+        />
         {isMuted ? <FiMicOff /> : <FiMic />}
         Mute
       </Button>
@@ -134,7 +140,6 @@ const Controls = ({ stream, isMuteRequested, setIsMuteRequested }) => {
         {isVideoActive ? <FiVideo /> : <FiVideoOff />}
         Hide
       </Button>
-      <Button onClick={requestMute}>Request Mute</Button>
     </Container>
   );
 };
