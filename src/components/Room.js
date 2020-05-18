@@ -24,6 +24,7 @@ const VideoContainer = styled.div`
   height: 100vh;
   display: grid;
   grid-template-columns: ${({ users }) => getColumns(users)};
+  overflow: hidden;
 `;
 
 const Room = () => {
