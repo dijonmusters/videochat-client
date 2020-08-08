@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { getColumns } from '../utils/spatial';
 import Controls from './Controls';
@@ -13,13 +13,25 @@ import RemoteVideo from './RemoteVideo';
 import { useSocket } from '../context/Socket';
 
 const Video = styled.video`
-  transform: scaleX(-1);
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  ${props => props.pip
+    ? css`
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 200px;
+      height: 120px;
+      object-fit: cover;
+    ` : css`
+      transform: scaleX(-1);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    `
+  };
 `;
 
 const VideoContainer = styled.div`
+  position: relative;
   width: 100vw;
   height: 100vh;
   display: grid;
@@ -147,9 +159,11 @@ const Room = () => {
     connectToRoom();
   }, []);
 
+  console.log(users.length)
+
   return (
     <VideoContainer users={users.length + 1}>
-      <Video ref={videoRef} autoPlay playsInline muted={true} />
+      <Video ref={videoRef} autoPlay playsInline muted={true} pip={users.length > 0} />
       {users.map((user) => (
         <RemoteVideo
           key={user.id}
