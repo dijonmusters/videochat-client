@@ -15,6 +15,7 @@ import { useSocket } from '../context/Socket';
 const Video = styled.video`
   ${props => props.pip
     ? css`
+      z-index: 1;
       transform: scaleX(-1);
       position: absolute;
       top: 0;
@@ -159,8 +160,6 @@ const Room = () => {
   useEffect(() => {
     connectToRoom();
   }, []);
-
-  console.log(users.length)
 
   return (
     <VideoContainer users={users.length}>

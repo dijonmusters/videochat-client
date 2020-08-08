@@ -1,5 +1,6 @@
 const getColumns = (items) => {
   switch (items) {
+    case 0:
     case 1:
       return '1fr';
     case 2:
