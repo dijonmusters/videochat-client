@@ -15,6 +15,7 @@ import { useSocket } from '../context/Socket';
 const Video = styled.video`
   ${props => props.pip
     ? css`
+      transform: scaleX(-1);
       position: absolute;
       top: 0;
       right: 0;
@@ -162,7 +163,7 @@ const Room = () => {
   console.log(users.length)
 
   return (
-    <VideoContainer users={users.length + 1}>
+    <VideoContainer users={users.length}>
       <Video ref={videoRef} autoPlay playsInline muted={true} pip={users.length > 0} />
       {users.map((user) => (
         <RemoteVideo
