@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import { getColumns } from '../utils/spatial';
+import { getColumns, getRows } from '../utils/spatial';
 import Controls from './Controls';
 import {
   createPeerConnection,
@@ -20,14 +20,14 @@ const Video = styled.video`
       position: absolute;
       top: 0;
       right: 0;
-      width: 200px;
-      height: 120px;
+      width: 180px;
+      height: 130px;
       object-fit: cover;
     ` : css`
       transform: scaleX(-1);
-      width: 100%;
       height: 100%;
       object-fit: cover;
+      margin: 0 auto;
     `
   };
 `;
@@ -38,7 +38,9 @@ const VideoContainer = styled.div`
   height: 100vh;
   display: grid;
   grid-template-columns: ${({ users }) => getColumns(users)};
+  grid-template-rows: ${({ users }) => getRows(users)};
   overflow: hidden;
+  background: #222;
 `;
 
 const Room = () => {
