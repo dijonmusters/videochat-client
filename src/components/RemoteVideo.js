@@ -7,13 +7,14 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 const Video = styled.video`
   transform: scaleX(-1);
-  width: 100%;
   height: 100%;
   object-fit: cover;
 `;
 
 const Container = styled.div`
   position: relative;
+  display: flex;
+  justify-content: center;
 `;
 
 const RequestMute = styled.button`
