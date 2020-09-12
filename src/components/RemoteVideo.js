@@ -6,7 +6,6 @@ import { useSocket } from '../context/Socket';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 const Video = styled.video`
-  transform: scaleX(-1);
   height: 100%;
   object-fit: cover;
 `;
